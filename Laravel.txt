@@ -1,0 +1,4 @@
+sudo ln -s /usr/share/phpmyadmin/ /home/vagrant/Code/phpmyadmin
+serve my.admin /home/vagrant/Code/phpmyadmin
+
+add to hosts
