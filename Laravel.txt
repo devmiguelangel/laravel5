@@ -1,3 +1,73 @@
+1.	Instalacion y uso de Composer
+curl -sS https://getcomposer.org/installer | php
+mv composer.phar /usr/local/bin/composer
+
+- composer/composer.json
+{
+    "name": "djmiguelarango/composer-example",
+    "description": "Ejemplo uso Composer",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Miguel MGM",
+            "email": "djmiguelarango@gmail.com",
+            "homepage": "http://djmiguelarango.com",
+            "role": "DJ"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "files": ["public/index.php"],
+        "psr-4": {
+            "": "public/"
+        }
+    }
+}
+
+composer install
+
+composer require dompdf/dompdf 0.6.*
+
+- composer/composer.json
+...	"require": {
+        "php": ">=5.3.0",
+        "dompdf/dompdf": "0.6.*"
+    },
+ 
+- composer/public/index.php
+<?php
+
+// somewhere early in your project's loading, require the Composer autoloader
+// see: http://getcomposer.org/doc/00-intro.md
+require '../vendor/autoload.php';
+
+// disable DOMPDF's internal autoloader if you are using Composer
+@define('DOMPDF_ENABLE_AUTOLOAD', false);
+
+// include DOMPDF's default configuration
+require_once '../vendor/dompdf/dompdf/dompdf_config.inc.php';
+
+$html =
+    '<html><body>'.
+    '<h1>djmiguelarango</h1>'.
+    '<p>Curso Laravel 5.</p>'.
+    '</body></html>';
+
+$dompdf = new DOMPDF();
+$dompdf->load_html($html);
+$dompdf->render();
+$dompdf->stream("sample.pdf");
+
+
+2.
+3.
+4.
+5.
+
+
+
 sudo ln -s /usr/share/phpmyadmin/ /home/vagrant/Code/phpmyadmin
 serve my.admin /home/vagrant/Code/phpmyadmin
 
