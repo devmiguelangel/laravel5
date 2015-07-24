@@ -15,9 +15,8 @@
         "dompdf/dompdf": "0.6.*"
     },
     "autoload": {
-        "files": ["public/index.php"],
         "psr-4": {
-            "": "public/"
+            "App\\": "Course/"
         }
     }
 }
