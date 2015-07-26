@@ -61,14 +61,270 @@ $dompdf->render();
 $dompdf->stream("sample.pdf");
 
 
-2.
-3.
-4.
-5.
+2.	Que es PSR-4 y uso de namespaces
+- Los estandares PSR-4 permite a Composer cargar las clases automaticamente
+
+- composer/composer.json
+"autoload": {
+    "classmap": [
+        "Course"
+    ],
+    "psr-4": {
+        
+    }
+}
+
+composer dump-autoload
+
+- composer/composer.json
+"autoload": {
+    "psr-4": {
+        "App\\": "Course/"
+    }
+}
+
+composer dump-autoload
+
+- composer/Course/Core/View/Template.php
+<?php namespace App\Core\View;
+
+class Template
+{
+    public static function render($file, array $data = array()) {
+        ob_start();
+        extract($data);
+        include '../templates/' . $file . '.php';
+        return ob_get_clean();
+    }
+}
+
+- composer/Course/Helpers/Pdf.php
+<?php namespace App\Helpers;
+
+use DOMPDF;
+
+class Pdf
+{
+    protected static $configured = false;
+
+    public static function configure() {
+        if (static::$configured) return;
 
 
+        // disable DOMPDF's internal autoloader if you are using Composer
+        define('DOMPDF_ENABLE_AUTOLOAD', false);
 
+        // include DOMPDF's default configuration
+        require_once '../vendor/dompdf/dompdf/dompdf_config.inc.php';
+
+        static::$configured = true;
+    }
+
+    public static function render($file, $html) {
+        static::configure();
+
+        $dompdf = new DOMPDF();
+        $dompdf->load_html($html);
+        $dompdf->render();
+        $dompdf->stream("$file.pdf");
+    }
+
+}
+
+- composer/public/download.php
+<?php
+
+use App\Core\View\Template;
+use App\Helpers\Pdf;
+
+// somewhere early in your project's loading, require the Composer autoloader
+// see: http://getcomposer.org/doc/00-intro.md
+require '../vendor/autoload.php';
+
+//require '../Course/Template.php';
+//require '../Course/Pdf.php';
+
+$data = array(
+    'name'      => 'Miguel Mamani',
+    'course'    => 'Curso de Laravel'
+);
+
+$html = Template::render('pdf/certificate', $data);
+
+Pdf::render('sample', $html);
+
+3.	Vagrant y Homestead
+- Entorno de desarrollo que provee PHP y un Servidor Web
+- Instalar VirtualBox o VMware y Vagrant
+
+vagrant box add laravel/homestead [file]
+composer global require "laravel/homestead=2.0"
+php vendor/bin/homestead make
+nano ~/.bash_profile
+export PATH="$HOME/.composer/vendor/bin:$PATH"
+
+ssh-keygen -t rsa -C "you@email"
+
+homestead init - homestead edit
+
+- Homestead.yaml
+ip: "192.168.10.10"
+memory: 2048
+cpus: 1
+provider: virtualbox
+
+authorize: ~/.ssh/id_rsa.pub
+
+keys:
+    - ~/.ssh/id_rsa
+
+folders:
+    - map: /Users/Miguel/Developer/Code_PHP
+      to: /home/vagrant/Code
+
+sites:
+    - map: laravel5.app
+      to: /home/vagrant/Code/Laravel5/
+
+databases:
+    - homestead
+
+variables:
+    - key: APP_ENV
+      value: local
+
+- Editar el host del SO y agregar
+sudo nano /etc/hosts
+
+192.168.10.10   laravel5.app
+
+- Iniciar la VM
+homestead up
+homestead up --provision
+
+- Detener la VM
+homestead halt
+
+- Acceder a la VM
+homestead ssh (user=vagrant - password=vagrant)
+
+- Acceder a MySQL
+mysql -u homestead -p secret
+
+- Instalar phpmyadmin
+sudo apt-get install phpmyadmin
 sudo ln -s /usr/share/phpmyadmin/ /home/vagrant/Code/phpmyadmin
 serve my.admin /home/vagrant/Code/phpmyadmin
 
-add to hosts
+- /etc/hosts
+192.168.10.10   my.admin
+
+
+4.	Nueva estructura de carpetas para los proyectos de Laravel 5
+- Instalar Laravel 5
+- Via Laravel Installer
+composer global require "laravel/installer=~1.1"
+laravel new {directory}
+
+- Via Composer
+composer create-project laravel/laravel {directory} 5.0 --prefer-dist
+
+- app
+Contiene las clases de la aplicacion usando el estandar PSR-4
+
+php artisan app:name Course (Cambia el namespace de la aplicacion)
+
+- config 
+Mas simplificada que la version 4.2
+Usa el archivo .env (Variables de entorno)
+
+- database
+migraations (Crear tablas de la DB usando objetos y metodos - Actua como un control de versiones de la DB)
+seeds (Cargar datos de prueba a las Tablas)
+
+- public
+Archivos de acceso publico (CSS, JS)
+
+- resources
+Vistas de Laravel (Blade es el motor de plantillas de Laravel)
+
+
+5.	Autenticacion de usuarios con Laravel 5
+- Middlewares 
+Es un mecanismo para el filtado de solicitudes
+Para ejecutar un middleware durante cada solicitud HTTP enumerar la clase middleware en la propiedad $routeMiddleware de la clase app/Http/Kernel.php
+
+- Crear y configurar la Base de Datos
+create database course;
+- .env
+
+- database/migrations (Control de versiones de la DB)
+- database/migrations/2014_10_12_000000_create_users_table.php
+class CreateUsersTable extends Migration {
+	public function up()
+	{
+		Schema::create('users', function(Blueprint $table)
+		{
+			$table->increments('id');
+			$table->string('name');
+			$table->string('email')->unique();
+			$table->string('password', 60);
+			$table->rememberToken();
+			$table->timestamps();
+		});
+	}
+
+	public function down()
+	{
+		Schema::drop('users');
+	}
+}
+
+php artisan migrate
+
+- seeders (Poblar la DB con datos de prueba)
+- database/seeds/DatabaseSeeder.php
+class DatabaseSeeder extends Seeder {
+	public function run()
+	{
+		Model::unguard();
+
+		$this->call('UserTableSeeder');
+	}
+}
+
+- database/seeds/UserTableSeeder.php
+class UserTableSeeder extends Seeder
+{
+    public function run() {
+        DB::table('users')->delete();
+
+        User::create([
+            'name'      => 'Miguel MG',
+            'email'     => 'djmiguelarango@gmail.com',
+            'password'  => Hash::make('secret')
+        ]);
+    }
+}
+
+composer dump-autoload
+php artisan db:seed
+php artisan db:seed --class=UserTableSeeder
+
+
+6.
+7.
+8.
+9.
+10.
+11.
+12.
+13.
+14.
+15.
+16.
+17.
+
+
+
+
