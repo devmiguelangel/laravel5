@@ -327,7 +327,7 @@ public function up()
     Schema::create('users', function(Blueprint $table)
     {
         $table->increments('id');
-        $table->string('full_name', 20);
+        $table->string('first_name', 20);
         $table->string('last_name', 20);
         $table->string('email')->unique();
         $table->string('password', 60);
@@ -389,7 +389,61 @@ public function down()
 php artisan migrate
 
 
-7.
+7.  Seeders y el componente Faker en Laravel 5
+php artisan migrate:reset
+
+composer require --dev fzaninotto/faker
+
+- database/seeds/AdminTableSeeder.php
+public function run() {
+    DB::table('users')->insert(array(
+        'first_name'    => 'Miguel',
+        'last_name'     => 'MG',
+        'email'         => 'djmiguelarango@gmail.com',
+        'password'      => Hash::make('secret'),
+        'type'          => 'admin'
+    ));
+}
+
+- database/seeds/UserTableSeeder.php
+use Faker\Factory as Faker;
+
+public function run() {
+    $faker = Faker::create();
+
+    for ($i = 0; $i < 30; $i++) {
+        $id = DB::table('users')->insertGetId(array(
+            'first_name'    => $faker->firstName,
+            'last_name'     => $faker->lastName,
+            'email'         => $faker->unique()->email,
+            'password'      => Hash::make('123456'),
+            'type'          => 'user'
+        ));
+
+        DB::table('user_profiles')->insert(array(
+            'user_id'   => $id,
+            'biography' => $faker->paragraph(rand(2, 5)),
+            'twitter'   => 'http://www.twitter.com/' . $faker->userName,
+            'website'   => 'http://www.' . $faker->domainName
+        ));
+    }
+}
+
+- database/migrations/2015_07_28_014947_create_tags_table.php
+public function up()
+{
+    Schema::create('tags', function(Blueprint $table)
+    {
+        $table->increments('id');
+        $table->string('name', 20);
+        $table->mediumText('description')->nullable();
+        $table->timestamps();
+    });
+}
+
+composer dump-autoload
+php artisan migrate:refresh --seed
+
 8.
 9.
 10.
