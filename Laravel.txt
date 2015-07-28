@@ -312,7 +312,83 @@ php artisan db:seed
 php artisan db:seed --class=UserTableSeeder
 
 
-6.
+6.  Creando Migraciones en Laravel 5
+- Crontrol de versiones de Base de Datos
+- Definir tablas con POO en vez de SQL
+- Compatible con los diferentes motores
+- Ideal para trabajar en equipo
+
+- Helps
+php artisan help [command]
+
+- database/migrations/2014_10_12_000000_create_users_table.php
+public function up()
+{
+    Schema::create('users', function(Blueprint $table)
+    {
+        $table->increments('id');
+        $table->string('full_name', 20);
+        $table->string('last_name', 20);
+        $table->string('email')->unique();
+        $table->string('password', 60);
+        $table->boolean('active')->default(true);
+        $table->rememberToken();
+        $table->timestamps();
+    });
+}
+
+php artisan migrate:rollback
+php artisa migrate
+
+php artisan make:migration create_tags_table --create=tags
+- database/migrations/2015_07_28_014947_create_tags_table.php
+public function up()
+{
+    Schema::create('tags', function(Blueprint $table)
+    {
+        $table->increments('id');
+        $table->string('name', 20);
+        $table->mediumText('description')->nullable();
+        $table->timestamps();
+    });
+}
+
+php artisan make:migration create_user_profiles_table --create=user_profiles
+- database/migrations/2015_07_28_015759_create_user_profiles_table.php
+Schema::create('user_profiles', function(Blueprint $table)
+{
+    $table->increments('id');
+    $table->mediumText('biography')->nullable();
+    $table->string('twitter')->nullable();
+    $table->string('website', 140)->nullable();
+    $table->integer('user_id')->unsigned();
+    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+    $table->timestamps();
+});
+
+php artisan migrate
+
+php artisan make:migration drop_active_column_from_users --table=users
+- database/migrations/2015_07_28_021221_drop_active_column_from_users.php
+public function up()
+{
+    Schema::table('users', function(Blueprint $table)
+    {
+        $table->dropColumn('active');
+    });
+}
+
+public function down()
+{
+    Schema::table('users', function(Blueprint $table)
+    {
+        $table->boolean('active')->default(true);
+    });
+}
+
+php artisan migrate
+
+
 7.
 8.
 9.
@@ -324,6 +400,14 @@ php artisan db:seed --class=UserTableSeeder
 15.
 16.
 17.
+
+
+
+
+
+
+
+
 
 
 
