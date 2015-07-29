@@ -18,8 +18,10 @@ Route::get('home', 'HomeController@index');
 Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
-	'users' => 'UsersController',
+	'users' => 'UsersController'
 ]);
+
+Route::get('orm', 'UsersController@getOrm');
 
 //Route::get('users', 'UsersController@getIndex');
 

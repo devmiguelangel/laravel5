@@ -317,6 +317,8 @@ php artisan db:seed --class=UserTableSeeder
 - Definir tablas con POO en vez de SQL
 - Compatible con los diferentes motores
 - Ideal para trabajar en equipo
+- Schema Builder
+- Migrations & Seeding
 
 - Helps
 php artisan help [command]
@@ -446,7 +448,7 @@ php artisan migrate:refresh --seed
 
 8.  Eloquent y Fluent en Laravel 5 (Query Builder - Eloquent)
 - Fluent (Generador de consultas de Base de Datos)
-- ORM de Laravel 5 (Trabajar las tablas y relaciones como objetos)
+- Eloquent ORM de Laravel 5 (Trabajar las tablas y relaciones como objetos)
 
 - app/Http/routes.php
 Route::controllers([
@@ -474,6 +476,43 @@ class UsersController extends Controller
         return $users;
     }
 }
+
+- ORM (Mapear datos de la base de datos para convertirlos a objetos y viceversa tomar un objeto y guardarlo como un registro en la DB)
+- Trabajar en un ambiente mas compatible
+
+- app/User.php
+public function profile() {
+    // $this->hasOne('App\UserProfile');
+    return $this->hasOne('App\UserProfile', 'user_id', 'id');
+}
+
+public function getFullNameAttribute() {
+    return $this->first_name . ' ' . $this->last_name;
+}
+
+php artisan make:model UserProfile
+- app/UserProfile.php
+class UserProfile extends Model {
+
+    protected $table = 'user_profiles';
+
+    public function getAgeAttribute() {
+        return Carbon::parse($this->birthdate)->age;
+    }
+}
+
+- app/Http/Controllers/UsersController.php
+public function getOrm() {
+    $users = User::select('id', 'first_name', 'last_name')
+        ->with('profile')
+        ->orderBy('first_name', 'asc')
+        ->get();
+
+    dd($users->toArray());
+    // dd($users->full_name);
+    // dd($users->profile->age);
+}
+
 
 9.
 10.

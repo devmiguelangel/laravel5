@@ -24,7 +24,8 @@ class UserTableSeeder extends Seeder
                 'user_id'   => $id,
                 'biography' => $faker->paragraph(rand(2, 5)),
                 'twitter'   => 'http://www.twitter.com/' . $faker->userName,
-                'website'   => 'http://www.' . $faker->domainName
+                'website'   => 'http://www.' . $faker->domainName,
+                'birthdate' => $faker->dateTimeBetween('-55 years', '-15 years')->format('Y-m-d')
             ));
         }
     }
