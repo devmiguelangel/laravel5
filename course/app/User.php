@@ -40,4 +40,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		return $this->first_name . ' ' . $this->last_name;
 	}
 
+	public function getTypeUserAttribute() {
+		$type_user = [
+			'admin'	=> 'Administrador',
+			'user'	=> 'Usuario',
+		];
+
+		return $type_user[$this->type];
+	}
+
 }

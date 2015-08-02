@@ -25,3 +25,12 @@ Route::get('orm', 'UsersController@getOrm');
 
 //Route::get('users', 'UsersController@getIndex');
 
+Route::get('example', function() {
+	$user = 'Miguel';
+
+	return view('examples.template', compact('user'));
+});
+
+Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function() {
+	Route:resource('users', 'UsersController');
+});

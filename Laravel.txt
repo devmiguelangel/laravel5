@@ -514,9 +514,122 @@ public function getOrm() {
 }
 
 
-9.
-10.
-11.
+9.  Blade (Montor de Plantillas)
+- Blade Templates
+- app/Http/routes.php
+Route::get('example', function() {
+    $user = 'Miguel';
+    return view('examples.template', compact('user'));
+});
+
+- resources/views/examples/layout.blade.php
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Curso Laravel</title>
+    <style type="text/css">
+        body {
+            background: #F26764;
+            font-family: "Open Sans",sans-serif !important;
+            font-size: 40px;
+            color: #FFFFFF;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+@yield('content')
+
+</body>
+</html>
+
+- resources/views/examples/template.blade.php
+@extends('examples.layout')
+@section('content')
+    <h1>Curso basico de Laravel 5</h1>
+    <p>
+        @if(isset($user))
+            {{ $user }}
+        @else
+            [Login]
+        @endif
+    </p>
+@endsection
+
+
+10. Integrando los componentes HTML y Form a Laravel
+- Laravel Collective 5.0 - 5.1
+- assets (Archivos no compilados Sass, Less , Styles, JS, CofeeScript, etc)
+
+- composer.json
+"require": {
+    "laravelcollective/html": "~5.0"
+},
+
+composer update
+
+- config/app.php
+'providers' => [
+    'Collective\Html\HtmlServiceProvider',
+],
+
+'aliases' => [
+    'Form' => 'Collective\Html\FormFacade',
+    'Html' => 'Collective\Html\HtmlFacade',
+],
+
+- resources/views/app.blade.php
+{!! Html::style('css/app.css') !!}
+{{--<link href="{{ asset('css/app.css') }}" rel="stylesheet">--}}
+
+- resources/views/auth/login.blade.php
+{!! Form::email('email', null, ['class' => 'form-control']) !!}
+{{--<input type="email" class="form-control" name="email" value="{{ old('email') }}">--}}
+
+{!! Form::password('password', ['class' => 'form-control']) !!}
+{{--<input type="password" class="form-control" name="password">--}}
+
+
+11. Paginacion en Laravel 5
+- Pagination
+- HTTP Routing
+
+- app/Http/routes.php
+RoRoute::group(['prefix' => 'admin', 'namespace' => 'Admin'], function() {
+    Route:resource('users', 'UsersController');
+});
+
+php artisan make:controller Admin/UsersController
+php artisan route:list
+
+- app/Http/Controllers/Admin/UsersController.php
+public function index()
+{
+    $users = User::paginate(7);
+    // dd($users);
+    return view('admin.index', ['users' => $users]);
+}
+
+- resources/views/admin/index.blade.php
+{{ $users->total() }} Usuarios en Total
+
+@foreach($users as $user)
+<tr>
+    <td>{{ $user->id }}</td>
+    <td>{{ $user->full_name }}</td>
+    <td>{{ $user->email }}</td>
+    <td>{{ $user->type_user }}</td>
+    <td>
+        <a href="#">Editar</a>
+        <a href="#">Eliminar</a>
+    </td>
+</tr>
+@endforeach
+
+{!! $users->render() !!}
+
+
 12.
 13.
 14.
