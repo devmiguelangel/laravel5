@@ -8,8 +8,14 @@
                     <div class="panel-heading">Usuarios</div>
 
                     <div class="panel-body">
-                        {{ $users->total() }} Usuarios en Total
+                        Hay {{ $users->total() }} Usuarios en Total
                     </div>
+
+                    <p>
+                        <a class="btn btn-info" href="{{ route('admin.users.create') }}" role="button">
+                            Nuevo Usuario
+                        </a>
+                    </p>
 
                     <table class="table table-hover">
                         <tr>

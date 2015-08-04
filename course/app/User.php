@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
 
@@ -22,7 +23,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['name', 'email', 'password'];
+	protected $fillable = ['first_name', 'last_name', 'email', 'password', 'type'];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -47,6 +48,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		];
 
 		return $type_user[$this->type];
+	}
+
+	public function setPasswordAttribute($value) {
+		return $this->attributes['password'] = Hash::make($value);
 	}
 
 }

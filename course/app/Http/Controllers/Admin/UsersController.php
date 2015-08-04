@@ -29,7 +29,7 @@ class UsersController extends Controller {
 	 */
 	public function create()
 	{
-		//
+		return view('admin.create');
 	}
 
 	/**
@@ -37,9 +37,16 @@ class UsersController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(Request $request)
 	{
-		//
+		$data = $request->all();
+		// dd($data);
+
+		$user = new User($data);
+		$user->save();
+
+		// return redirect('admin/users');
+		return redirect()->route('admin.users.index');
 	}
 
 	/**
