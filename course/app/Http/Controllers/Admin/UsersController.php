@@ -3,6 +3,7 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use App\Http\Requests\CreateUserRequest;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -37,12 +38,12 @@ class UsersController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store(Request $request)
+	public function store(CreateUserRequest $request)
 	{
-		$data = $request->all();
+		// $data = $request->all();
 		// dd($data);
 
-		$user = new User($data);
+		$user = new User($request->all());
 		$user->save();
 
 		// return redirect('admin/users');
@@ -68,7 +69,9 @@ class UsersController extends Controller {
 	 */
 	public function edit($id)
 	{
-		//
+		$user = User::findOrFail($id);
+
+		return view('admin.edit', ['user' => $user]);
 	}
 
 	/**
@@ -77,9 +80,13 @@ class UsersController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update($id, Request $request)
 	{
-		//
+		$user = User::findOrFail($id);
+		$user->fill($request->all());
+		$user->save();
+
+		return redirect()->route('admin.users.index');
 	}
 
 	/**

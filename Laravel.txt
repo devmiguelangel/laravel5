@@ -695,11 +695,89 @@ public function store(Request $request)
 
 
 13. Edicion de Usuarios
+- resources/views/admin/index.blade.php
+<a href="{{ route('admin.users.edit', [$user->id]) }}">Editar</a>
+
+- app/Http/Controllers/Admin/UsersController.php
+public function edit($id)
+{
+    $user = User::findOrFail($id);
+    return view('admin.edit', ['user' => $user]);
+}
+
+- resources/views/admin/partials/fields.blade.php
+<div class="form-group">
+    {!! Form::label('first_name', 'Nombres') !!}
+    {!! Form::text('first_name', null, ['class' => 'form-control', 'placeholder' => 'Nombres']) !!}
+</div>
+
+- resources/views/admin/edit.blade.php
+{!! Form::model($user, ['route' => ['admin.users.update', $user->id], 'method' => 'PUT']) !!}
+@include('admin.partials.fields')
+<button type="submit" class="btn btn-success">Actualizar</button>
+{!! Form::close() !!}
+
+- app/User.php
+public function setPasswordAttribute($value) {
+    if (!empty($value)) {
+        return $this->attributes['password'] = Hash::make($value);
+    }
+}
+
+- app/Http/Controllers/Admin/UsersController.php
+public function update($id, Request $request)
+{
+    $user = User::findOrFail($id);
+    $user->fill($request->all());
+    $user->save();
+
+    return redirect()->route('admin.users.index');
+}
 
 
+14. Validacion 1
+- Validation
 
-14.
-15.
+php artisan make:request CreateUserRequest
+
+- app/Http/Requests/CreateUserRequest.php
+public function authorize()
+{
+    return true;
+}
+
+public function rules()
+{
+    return [
+        'first_name'    => 'required',
+        'last_name'     => 'required',
+        'email'         => 'required|unique:users,email',
+        'password'      => 'required',
+        'type'          => 'required',
+    ];
+}
+
+- app/Http/Controllers/Admin/UsersController.php
+public function store(CreateUserRequest $request)
+{
+    $user = new User($request->all());
+    $user->save();
+    return redirect()->route('admin.users.index');
+}
+
+- resources/views/admin/create.blade.php
+@if(count($errors) > 0)
+    <div class="alert alert-danger" role="alert">
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
+15. Validacion 2
 16.
 17.
 

@@ -51,7 +51,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	public function setPasswordAttribute($value) {
-		return $this->attributes['password'] = Hash::make($value);
+		if (!empty($value)) {
+			return $this->attributes['password'] = Hash::make($value);
+		}
 	}
 
 }

@@ -32,7 +32,7 @@
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->type_user }}</td>
                             <td>
-                                <a href="#">Editar</a>
+                                <a href="{{ route('admin.users.edit', [$user->id]) }}">Editar</a>
                                 <a href="#">Eliminar</a>
                             </td>
                         </tr>
