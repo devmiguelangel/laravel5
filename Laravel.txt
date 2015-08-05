@@ -829,7 +829,39 @@ public function update(EditUserRequest $request, $id)
 @include('admin.partials.messages')
 
 
-16.
+16. Internacionalizacion
+- Localization
+
+- https://github.com/caouecs/Laravel-lang
+copy to resources/lang/es
+
+- config/app.php
+'locale' => 'es',
+'fallback_locale' => 'en',
+
+- resources/lang/es/passwords.php
+"credentials" => array(
+    "invalid" => "Estas credenciales no coinciden con nuestros registros.",
+),
+
+- vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesAndRegistersUsers.php
+protected function getFailedLoginMessage()
+{
+    // return 'These credentials do not match our records.';
+    return trans('passwords.credentials.invalid');
+}
+
+- resources/lang/es/validation.php
+'attributes' => [
+    'email' => 'Correo Electrónico',
+    'password' => 'Contraseña',
+],
+
+- resources/views/auth/login.blade.php
+<label class="col-md-4 control-label">{{ trans('validation.attributes.email') }}</label>
+<label class="col-md-4 control-label">{{ trans('validation.attributes.password') }}</label>
+
+
 17.
 18.
 19.

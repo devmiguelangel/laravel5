@@ -22,7 +22,7 @@
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 
 						<div class="form-group">
-							<label class="col-md-4 control-label">E-Mail Address</label>
+							<label class="col-md-4 control-label">{{ trans('validation.attributes.email') }}</label>
 							<div class="col-md-6">
 								{!! Form::email('email', null, ['class' => 'form-control']) !!}
 								{{--<input type="email" class="form-control" name="email" value="{{ old('email') }}">--}}
@@ -30,7 +30,7 @@
 						</div>
 
 						<div class="form-group">
-							<label class="col-md-4 control-label">Password</label>
+							<label class="col-md-4 control-label">{{ trans('validation.attributes.password') }}</label>
 							<div class="col-md-6">
 								{!! Form::password('password', ['class' => 'form-control']) !!}
 								{{--<input type="password" class="form-control" name="password">--}}
