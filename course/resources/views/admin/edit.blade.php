@@ -7,6 +7,8 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">Usuarios</div>
 
+                    @include('admin.partials.messages')
+
                     {!! Form::model($user, ['route' => ['admin.users.update', $user->id], 'method' => 'PUT']) !!}
 
                     @include('admin.partials.fields')

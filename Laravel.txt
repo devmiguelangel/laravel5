@@ -778,8 +778,67 @@ public function store(CreateUserRequest $request)
 
 
 15. Validacion 2
+php artisan make:request EditUserRequest
+
+- app/Http/Requests/EditUserRequest.php
+class EditUserRequest extends Request {
+    public function __construct(Route $route) {
+
+        $this->route = $route;
+    }
+    
+    public function authorize()
+    {
+        return true;
+    }
+
+    public function rules()
+    {
+        return [
+            'first_name'    => 'required',
+            'last_name'     => 'required',
+            'email'         => 'required|unique:users,email,' . $this->route->getParameter('users'),
+            'password'      => '',
+            'type'          => 'required|in:admin,user',
+        ];
+    }
+}
+
+- app/Http/Controllers/Admin/UsersController.php
+public function update(EditUserRequest $request, $id)
+{
+    $user = User::findOrFail($id);
+    $user->fill($request->all());
+    $user->save();
+
+    return redirect()->route('admin.users.index');
+}
+
+- resources/views/admin/partials/messages.blade.php
+@if(count($errors) > 0)
+    <div class="alert alert-danger" role="alert">
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+- resources/views/admin/edit.blade.php
+@include('admin.partials.messages')
+
+
 16.
 17.
+18.
+19.
+20.
+21.
+22.
+23.
+24.
+25.
 
 
 
