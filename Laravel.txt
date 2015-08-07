@@ -213,8 +213,12 @@ mysql -u homestead -p secret
 
 - Instalar phpmyadmin
 sudo apt-get install phpmyadmin
+
 sudo ln -s /usr/share/phpmyadmin/ /home/vagrant/Code/phpmyadmin
 serve my.admin /home/vagrant/Code/phpmyadmin
+OR-------------------------------------------------------------
+sudo ln -s /usr/share/phpmyadmin/ /usr/share/nginx/html/phpmyadmin
+serve my.admin /usr/share/nginx/html/phpmyadmin
 
 - /etc/hosts
 192.168.10.10   my.admin
@@ -862,7 +866,36 @@ protected function getFailedLoginMessage()
 <label class="col-md-4 control-label">{{ trans('validation.attributes.password') }}</label>
 
 
-17.
+17. Eliminar registros
+- Session
+
+- resources/views/admin/partials/delete.blade.php
+{!! Form::open(array('route' => ['admin.users.destroy', $user->id], 'method' => 'DELETE')) !!}
+<button type="submit" class="btn btn-danger">Eliminar Usuario</button>
+{!! Form::close() !!}
+
+- resources/views/admin/edit.blade.php
+@include('admin.partials.delete')
+
+- app/Http/Controllers/Admin/UsersController.php
+public function destroy($id)
+{
+    // dd($id);
+    // User::destroy($id);
+    $user = User::findOrFail($id);
+    $user->delete();
+
+    Session::flash('message', 'El usuario ' . $user->full_name . ' fue eliminado');
+
+    return redirect()->route('admin.users.index');
+}
+
+- resources/views/admin/index.blade.php
+@if(Session::has('message'))
+    <p class="alert alert-success">{{ Session::get('message') }}</p>
+@endif
+
+
 18.
 19.
 20.

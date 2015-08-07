@@ -16,6 +16,7 @@
                     <button type="submit" class="btn btn-success">Actualizar</button>
                     {!! Form::close() !!}
                 </div>
+                @include('admin.partials.delete')
             </div>
         </div>
     </div>
