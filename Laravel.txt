@@ -896,8 +896,37 @@ public function destroy($id)
 @endif
 
 
-18.
-19.
+18. Principio de diseño DRY
+- app/Http/Controllers/Admin/UsersController.php
+public function __construct() {
+    $this->beforeFilter('@findUser', ['only' => ['show', 'edit', 'update', 'destroy']]);
+}
+
+public function findUser(Route $route) {
+    $this->user = User::findOrFail($route->getParameter('users'));
+}
+
+public function edit($id)
+{
+    return view('admin.edit')->with('user', $this->user);
+}
+
+public function update(EditUserRequest $request, $id)
+{
+    $this->user->fill($request->all());
+    $this->user->save();
+    return redirect()->route('admin.users.index');
+}
+
+public function destroy($id)
+{
+    $this->user->delete();
+    Session::flash('message', 'El usuario ' . $this->user->full_name . ' fue eliminado');
+    return redirect()->route('admin.users.index');
+}
+
+
+19. 
 20.
 21.
 22.

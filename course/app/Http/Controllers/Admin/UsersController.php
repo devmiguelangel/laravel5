@@ -7,9 +7,20 @@ use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\EditUserRequest;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Session;
 
 class UsersController extends Controller {
+
+	private $user;
+
+	public function __construct() {
+		$this->beforeFilter('@findUser', ['only' => ['show', 'edit', 'update', 'destroy']]);
+	}
+
+	public function findUser(Route $route) {
+		$this->user = User::findOrFail($route->getParameter('users'));
+	}
 
 	/**
 	 * Display a listing of the resource.
@@ -71,9 +82,9 @@ class UsersController extends Controller {
 	 */
 	public function edit($id)
 	{
-		$user = User::findOrFail($id);
-
-		return view('admin.edit', ['user' => $user]);
+		// $user = User::findOrFail($id);
+		// return view('admin.edit', ['user' => $user]);
+		return view('admin.edit')->with('user', $this->user);
 	}
 
 	/**
@@ -84,9 +95,11 @@ class UsersController extends Controller {
 	 */
 	public function update(EditUserRequest $request, $id)
 	{
-		$user = User::findOrFail($id);
-		$user->fill($request->all());
-		$user->save();
+		// $user = User::findOrFail($id);
+		// $user->fill($request->all());
+		// $user->save();
+		$this->user->fill($request->all());
+		$this->user->save();
 
 		return redirect()->route('admin.users.index');
 	}
@@ -101,10 +114,13 @@ class UsersController extends Controller {
 	{
 		// dd($id);
 		// User::destroy($id);
-		$user = User::findOrFail($id);
-		$user->delete();
 
-		Session::flash('message', 'El usuario ' . $user->full_name . ' fue eliminado');
+		// $user = User::findOrFail($id);
+		// $user->delete();
+
+		$this->user->delete();
+
+		Session::flash('message', 'El usuario ' . $this->user->full_name . ' fue eliminado');
 
 		return redirect()->route('admin.users.index');
 	}
