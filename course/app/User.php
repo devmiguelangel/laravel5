@@ -37,9 +37,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		return $this->hasOne('App\UserProfile', 'user_id', 'id');
 	}
 
-	public function getFullNameAttribute() {
+	/*public function getFullNameAttribute() {
 		return $this->first_name . ' ' . $this->last_name;
-	}
+	}*/
 
 	public function getTypeUserAttribute() {
 		$type_user = [
@@ -54,6 +54,19 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		if (!empty($value)) {
 			return $this->attributes['password'] = Hash::make($value);
 		}
+	}
+
+	public function scopeName($query, $name)
+	{
+		if (!empty($name)) {
+			// dd($name);
+			return $query->where('full_name', 'LIKE', "%$name%");
+		}
+	}
+
+	public function save(array $options = array()) {
+		$this->full_name = $this->first_name . ' ' . $this->last_name;
+		parent::save();
 	}
 
 }

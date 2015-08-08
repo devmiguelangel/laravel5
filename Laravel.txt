@@ -1001,6 +1001,35 @@ public function destroy($id, Request $request)
 
 
 20. Filtrar Usuarios
+- resources/views/admin/index.blade.php
+{!! Form::open(['route' => 'admin.users.index', 'method' => 'GET',
+    'class' => 'navbar-form navbar-left pull-right', 'role' => 'search']) !!}
+<div class="form-group">
+    {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Nombre de Usuario']) !!}
+</div>
+<button type="submit" class="btn btn-default">Submit</button>
+{!! Form::close() !!}
+
+- app/User.php
+public function scopeName($query, $name)
+{
+    if (!empty($name)) {
+        return $query->where('full_name', 'LIKE', "%$name%");
+    }
+}
+
+public function save(array $options = array()) {
+    $this->full_name = $this->first_name . ' ' . $this->last_name;
+    parent::save();
+}
+
+- app/Http/Controllers/Admin/UsersController.php
+public function index(Request $request)
+{
+    $users = User::name($request->get('name'))->orderBy('id', 'DESC')->paginate(7);
+    return view('admin.index', ['users' => $users]);
+}
+
 21. Combinar filtros y paginacion
 22. Seguridad - Middleware
 23. Crear Middlewares

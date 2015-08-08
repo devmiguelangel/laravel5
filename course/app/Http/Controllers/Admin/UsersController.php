@@ -27,10 +27,10 @@ class UsersController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function index()
+	public function index(Request $request)
 	{
-		$users = User::paginate(7);
-
+		$users = User::name($request->get('name'))->orderBy('id', 'DESC')->paginate(7);
+		// dd(DB::getQueryLog());
 		// dd($users);
 
 		return view('admin.index', ['users' => $users]);
