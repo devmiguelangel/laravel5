@@ -19,31 +19,40 @@
                         </a>
                     </p>
 
-                    <table class="table table-hover">
-                        <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Tipo</th>
-                            <th>Accion</th>
-                        </tr>
-                        @foreach($users as $user)
-                        <tr>
-                            <td>{{ $user->id }}</td>
-                            <td>{{ $user->full_name }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ $user->type_user }}</td>
-                            <td>
-                                <a href="{{ route('admin.users.edit', [$user->id]) }}">Editar</a>
-                                <a href="#">Eliminar</a>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </table>
+                    @include('admin.partials.table')
 
                     {!! $users->render() !!}
                 </div>
             </div>
         </div>
     </div>
+
+    {!! Form::open(array('route' => ['admin.users.destroy', ':USER_ID'], 'method' => 'DELETE', 'id' => 'form-delete')) !!}
+    {!! Form::close() !!}
+@endsection
+
+@section('scripts')
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.btn-delete').click(function (e) {
+            e.preventDefault();
+
+            var id  = $(this).data('row');
+            var row = '#u-' + id;
+            var url = $('#form-delete').prop('action');
+            url = url.replace(':USER_ID', id);
+
+            var data = $('#form-delete').serialize();
+            
+            $.post(url, data, function (result) {
+                $(row).fadeOut();
+                alert(result.message);
+                console.log(result);
+            }).fail(function (err) {
+                console.log(err);
+                alert('El usuario no puede eliminarse');
+            });
+        });
+    });
+</script>
 @endsection

@@ -110,7 +110,7 @@ class UsersController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function destroy($id, Request $request)
 	{
 		// dd($id);
 		// User::destroy($id);
@@ -118,9 +118,18 @@ class UsersController extends Controller {
 		// $user = User::findOrFail($id);
 		// $user->delete();
 
+		//abort(500);
 		$this->user->delete();
+		$message = 'El usuario ' . $this->user->full_name . ' fue eliminado';
 
-		Session::flash('message', 'El usuario ' . $this->user->full_name . ' fue eliminado');
+		if ($request->ajax()) {
+			return response()->json([
+				'id'		=> $this->user->id,
+				'message' 	=> $message,
+			]);
+		}
+
+		Session::flash('message', $message);
 
 		return redirect()->route('admin.users.index');
 	}

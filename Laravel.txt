@@ -897,6 +897,8 @@ public function destroy($id)
 
 
 18. Principio de diseño DRY
+- Controllers 4.2
+
 - app/Http/Controllers/Admin/UsersController.php
 public function __construct() {
     $this->beforeFilter('@findUser', ['only' => ['show', 'edit', 'update', 'destroy']]);
@@ -926,13 +928,83 @@ public function destroy($id)
 }
 
 
-19. 
-20.
-21.
-22.
-23.
+19. Ajax con Laravel
+- HTTP Responses
+
+- resources/views/app.blade.php
+@yield('scripts')
+
+- resources/views/admin/partials/table.blade.php
+@foreach($users as $user)
+    <tr id="u-{{ $user->id }}">
+        <td>{{ $user->id }}</td>
+        <td>{{ $user->full_name }}</td>
+        <td>{{ $user->email }}</td>
+        <td>{{ $user->type_user }}</td>
+        <td>
+            <a href="{{ route('admin.users.edit', [$user->id]) }}">Editar</a>
+            <a href="#!" class="btn-delete" data-row="{{ $user->id }}">Eliminar</a>
+        </td>
+    </tr>
+@endforeach
+
+- resources/views/admin/index.blade.php
+@include('admin.partials.table')
+
+{!! Form::open(array('route' => ['admin.users.destroy', ':USER_ID'], 'method' => 'DELETE', 'id' => 'form-delete')) !!}
+{!! Form::close() !!}
+
+@section('scripts')
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.btn-delete').click(function (e) {
+            e.preventDefault();
+
+            var id  = $(this).data('row');
+            var row = '#u-' + id;
+            var url = $('#form-delete').prop('action');
+            url = url.replace(':USER_ID', id);
+
+            var data = $('#form-delete').serialize();
+            
+            $.post(url, data, function (result) {
+                $(row).fadeOut();
+                alert(result.message);
+                console.log(result);
+            }).fail(function (err) {
+                console.log(err);
+                alert('El usuario no puede eliminarse');
+            });
+        });
+    });
+</script>
+@endsection
+
+- app/Http/Controllers/Admin/UsersController.php
+public function destroy($id, Request $request)
+{
+    //abort(500);
+    $this->user->delete();
+    $message = 'El usuario ' . $this->user->full_name . ' fue eliminado';
+
+    if ($request->ajax()) {
+        return response()->json([
+            'id'        => $this->user->id,
+            'message'   => $message,
+        ]);
+    }
+
+    Session::flash('message', $message);
+
+    return redirect()->route('admin.users.index');
+}
+
+
+20. Filtrar Usuarios
+21. Combinar filtros y paginacion
+22. Seguridad - Middleware
+23. Crear Middlewares
 24.
-25.
 
 
 
