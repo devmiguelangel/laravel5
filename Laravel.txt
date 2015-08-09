@@ -1081,7 +1081,63 @@ public function index(Request $request)
 
 
 22. Seguridad - Middleware
+- app/Http/Controllers/Admin/UsersController.php
+public function __construct() {
+    $this->middleware('auth');
+    $this->beforeFilter('@findUser', ['only' => ['show', 'edit', 'update', 'destroy']]);
+}
+
+- app/Http/routes.php
+Route::group(['prefix' => 'admin', 'middleware' => 'auth', 'namespace' => 'Admin'], function() {
+    Route:resource('users', 'UsersController');
+});
+
+
 23. Crear Middlewares
+- app/User.php
+public function isAdmin()
+{
+    return $this->type === 'admin';
+}
+
+php artisan make:middleware IsAdmin
+- app/Http/Kernel.php
+protected $routeMiddleware = [
+    'is_admin' => 'App\Http\Middleware\IsAdmin',
+];
+
+- app/Http/Middleware/IsAdmin.php
+public function __construct(Guard $auth)
+{
+    $this->auth = $auth;
+}
+
+public function handle($request, Closure $next)
+{
+    if (!$this->auth->user()->isAdmin()) {
+
+        if ($request->ajax()) {
+            return response('Unauthorized.', 401);
+        } else {
+            Session::flash('mess_admin', 'Usted no tiene permisos');
+            return redirect()->to('home');
+        }
+    }
+    return $next($request);
+}
+
+- app/Http/routes.php
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'is_admin'], 'namespace' => 'Admin'], function() {
+    Route:resource('users', 'UsersController');
+});
+
+- resources/views/home.blade.php
+@if(Session::has('mess_admin'))
+<div class="alert alert-warning" role="alert">
+    {{ Session::get('mess_admin') }}
+</div>
+@endif
+
 24.
 
 

@@ -7,6 +7,12 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">Home</div>
 
+				@if(Session::has('mess_admin'))
+				<div class="alert alert-warning" role="alert">
+					{{ Session::get('mess_admin') }}
+				</div>
+				@endif
+
 				<div class="panel-body">
 					You are logged in!
 				</div>

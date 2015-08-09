@@ -31,6 +31,6 @@ Route::get('example', function() {
 	return view('examples.template', compact('user'));
 });
 
-Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function() {
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'is_admin'], 'namespace' => 'Admin'], function() {
 	Route:resource('users', 'UsersController');
 });
