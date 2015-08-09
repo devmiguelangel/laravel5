@@ -5,31 +5,36 @@
         <div class="row">
             <div class="col-md-10 col-md-offset-1">
                 <div class="panel panel-default">
-                    {!! Form::open(['route' => 'admin.users.index', 'method' => 'GET',
-                        'class' => 'navbar-form navbar-left pull-right', 'role' => 'search']) !!}
-                    <div class="form-group">
-                        {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Nombre de Usuario']) !!}
-                    </div>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                    {!! Form::close() !!}
-
                     <div class="panel-heading">Usuarios</div>
                     @if(Session::has('message'))
                         <p class="alert alert-success">{{ Session::get('message') }}</p>
                     @endif
+
+
                     <div class="panel-body">
-                        Hay {{ $users->total() }} Usuarios en Total
+                        {!! Form::model(Request::only('name', 'type'), ['route' => 'admin.users.index', 'method' => 'GET',
+                            'class' => 'navbar-form navbar-left pull-right', 'role' => 'search']) !!}
+                        <div class="form-group">
+                            {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Nombre de Usuario']) !!}
+                            {!! Form::select('type', config('options.types'), null, ['class' => 'form-control']) !!}
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                        {!! Form::close() !!}
+
+                        <p>
+                            <a class="btn btn-info" href="{{ route('admin.users.create') }}" role="button">
+                                Nuevo Usuario
+                            </a>
+                        </p>
                     </div>
 
-                    <p>
-                        <a class="btn btn-info" href="{{ route('admin.users.create') }}" role="button">
-                            Nuevo Usuario
-                        </a>
+                    <p class="panel-body">
+                        Hay {{ $users->total() }} Usuarios en Total
                     </p>
 
                     @include('admin.partials.table')
 
-                    {!! $users->render() !!}
+                    {!! $users->appends(Request::all())->render() !!}
                 </div>
             </div>
         </div>

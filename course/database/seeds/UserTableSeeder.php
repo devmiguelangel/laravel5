@@ -11,7 +11,7 @@ class UserTableSeeder extends Seeder
     public function run() {
         $faker = Faker::create();
 
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < 500; $i++) {
             $first_name = $faker->firstName;
             $last_name  = $faker->lastName;
 
@@ -21,7 +21,7 @@ class UserTableSeeder extends Seeder
                 'full_name'     => $first_name . ' ' . $last_name,
                 'email'         => $faker->unique()->email,
                 'password'      => Hash::make('123456'),
-                'type'          => 'user'
+                'type'          => $faker->randomElement(['user', 'editor', 'contributor', 'subscriber'])
             ));
 
             DB::table('user_profiles')->insert(array(

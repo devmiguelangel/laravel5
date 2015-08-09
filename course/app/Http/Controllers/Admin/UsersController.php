@@ -29,7 +29,8 @@ class UsersController extends Controller {
 	 */
 	public function index(Request $request)
 	{
-		$users = User::name($request->get('name'))->orderBy('id', 'DESC')->paginate(7);
+		// $users = User::name($request->get('name'))->type($request->get('type'))->orderBy('id', 'DESC')->paginate(7);
+		$users = User::findAndPaginate($request->get('name'), $request->get('type'));
 		// dd(DB::getQueryLog());
 		// dd($users);
 

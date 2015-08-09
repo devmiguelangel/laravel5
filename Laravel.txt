@@ -1030,7 +1030,56 @@ public function index(Request $request)
     return view('admin.index', ['users' => $users]);
 }
 
+
 21. Combinar filtros y paginacion
+- config/options.php
+return [
+    'types' => [
+        ''              => 'Seleccione',
+        'admin'         => 'Administrador',
+        'user'          => 'Usuario',
+        'editor'        => 'Editor',
+        'contributor'   => 'Contribuidor',
+        'subscriber'    => 'Suscriptor',
+    ]
+];
+
+- resources/views/admin/index.blade.php
+{!! Form::model(Request::only('name', 'type'), ['route' => 'admin.users.index', 'method' => 'GET',
+    'class' => 'navbar-form navbar-left pull-right', 'role' => 'search']) !!}
+<div class="form-group">
+    {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Nombre de Usuario']) !!}
+    {!! Form::select('type', config('options.types'), null, ['class' => 'form-control']) !!}
+</div>
+<button type="submit" class="btn btn-default">Submit</button>
+{!! Form::close() !!}
+
+{!! $users->appends(Request::all())->render() !!}
+
+- app/User.php
+public static function findAndPaginate($name, $type)
+{
+    return User::name($name)
+        ->type($type)
+        ->orderBy('id', 'DESC')
+        ->paginate(7);
+}
+
+public function scopeType($query, $type)
+{
+    if (!empty($type)) {
+        return $query->where('type', $type);
+    }
+}
+
+- app/Http/Controllers/Admin/UsersController.php
+public function index(Request $request)
+{
+    $users = User::findAndPaginate($request->get('name'), $request->get('type'));
+    return view('admin.index', ['users' => $users]);
+}
+
+
 22. Seguridad - Middleware
 23. Crear Middlewares
 24.

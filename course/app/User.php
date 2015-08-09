@@ -32,6 +32,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	protected $hidden = ['password', 'remember_token'];
 
+	public static function findAndPaginate($name, $type)
+	{
+		return User::name($name)
+			->type($type)
+			->orderBy('id', 'DESC')
+			->paginate(7);
+	}
+
 	public function profile() {
 		// $this->hasOne('App\UserProfile');
 		return $this->hasOne('App\UserProfile', 'user_id', 'id');
@@ -61,6 +69,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		if (!empty($name)) {
 			// dd($name);
 			return $query->where('full_name', 'LIKE', "%$name%");
+		}
+	}
+
+	public function scopeType($query, $type)
+	{
+		if (!empty($type)) {
+			return $query->where('type', $type);
 		}
 	}
 
