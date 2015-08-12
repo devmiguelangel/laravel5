@@ -140,6 +140,7 @@ return [
 		 * Vendor Providers
 		 */
 		'Collective\Html\HtmlServiceProvider',
+		Barryvdh\Debugbar\ServiceProvider::class,
 
 		/*
 		 * Application Service Providers...
@@ -204,6 +205,7 @@ return [
 
 		'Form' => 'Collective\Html\FormFacade',
 		'Html' => 'Collective\Html\HtmlFacade',
+		'Debugbar' => Barryvdh\Debugbar\Facade::class,
 
 	],
 
